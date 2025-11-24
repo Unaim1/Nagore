@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yincana sorpresa — Nagore</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#f59e0b;--muted:#94a3b8;--glass:rgba(255,255,255,0.04)}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg,#071025 0%, #0f1724 100%);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:20px}
+    .wrap{width:100%;max-width:980px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ef4444);display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 6px 24px rgba(0,0,0,.6)}
+    h1{margin:0;font-size:22px}
+    p.lead{margin:6px 0 0;color:var(--muted)}
+
+    .board{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .card{background:linear-gradient(180deg,var(--card),#071226);border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,.6);min-height:180px}
+    .card h2{margin:0 0 8px;font-size:16px}
+    .hint{color:var(--muted);font-size:14px;margin-bottom:12px}
+
+    input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.06);background:var(--glass);color:inherit}
+    button{cursor:pointer;padding:10px 12px;border-radius:8px;border:0;background:linear-gradient(90deg,var(--accent),#ef4444);color:#071226;font-weight:700}
+    .small{font-size:13px;padding:8px 10px}
+
+    .clue-locked{opacity:.72}
+    .ok{border:2px solid rgba(34,197,94,.18);box-shadow:0 6px 20px rgba(34,197,94,.06)}
+
+    .progress{display:flex;gap:8px;align-items:center;margin:12px 0}
+    .dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.06)}
+    .dot.on{background:linear-gradient(90deg,var(--accent),#ef4444)}
+
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+
+    /* Modal reveal */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,.6);visibility:hidden;opacity:0;transition:all .25s}
+    .modal.show{visibility:visible;opacity:1}
+    .ticket{background:linear-gradient(180deg,#fff,#f3f4f6);color:#061126;padding:28px;border-radius:14px;max-width:560px;width:92%;box-shadow:0 30px 80px rgba(2,6,23,.6);text-align:center}
+    .ticket h2{margin:6px 0 12px}
+    .big{font-size:22px;font-weight:800}
+    .plane{font-size:48px}
+
+    @media(max-width:760px){.board{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">✈️</div>
+      <div>
+        <h1>Yincana sorpresa — para <strong>Nagore</strong></h1>
+        <p class="lead">Resuelve las pistas para descubrir el destino. Pista final: viajaréis <em>en avión</em>. ¡Suerte!</p>
+      </div>
+    </header>
+
+    <div class="progress" aria-hidden>
+      <div class="dot" id="p1"></div>
+      <div class="dot" id="p2"></div>
+      <div class="dot" id="p3"></div>
+      <div class="dot" id="p4"></div>
+    </div>
+
+    <div class="board">
+      <!-- Clue 1: Rompecabezas de palabra -->
+      <div class="card" id="card1">
+        <h2>Pista 1 — Anagrama</h2>
+        <p class="hint">Reordena las letras para formar una palabra relacionada con cómo viajaremos.</p>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="font-weight:800;font-size:20px">V O N I A</div>
+          <div style="flex:1">
+            <input type="text" id="ans1" placeholder="Escribe la palabra aquí">
+          </div>
+          <button onclick="check1()">Comprobar</button>
+        </div>
+        <p id="res1" style="margin-top:10px;color:var(--muted)"></p>
+      </div>
+
+      <!-- Clue 2: Riddle -->
+      <div class="card clue-locked" id="card2">
+        <h2>Pista 2 — Adivinanza</h2>
+        <p class="hint">"Tengo alas aunque no soy pájaro, me verás en aeropuertos y cruzo cielos como un faro."</p>
+        <input type="text" id="ans2" placeholder="¿Qué soy?">
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="small" onclick="check2()">Comprobar</button>
+          <button class="small" onclick="hint2()">Pista</button>
+        </div>
+        <p id="res2" style="margin-top:10px;color:var(--muted)"></p>
+      </div>
+
+      <!-- Clue 3: Cifrado César -->
+      <div class="card clue-locked" id="card3">
+        <h2>Pista 3 — Mensaje cifrado</h2>
+        <p class="hint">Desplaza cada letra 7 posiciones atrás para leer la palabra (A→T si retrocedes 7). Texto: <code>O H A L A L U V Y</code></p>
+        <input type="text" id="ans3" placeholder="Escribe lo que descifres">
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="small" onclick="check3()">Comprobar</button>
+          <button class="small" onclick="hint3()">Pista</button>
+        </div>
+        <p id="res3" style="margin-top:10px;color:var(--muted)"></p>
+      </div>
+
+      <!-- Clue 4: Quiz final -->
+      <div class="card clue-locked" id="card4">
+        <h2>Pista 4 — Elección final</h2>
+        <p class="hint">Con las pistas previas tienes letras y palabras que apuntan al destino. Escoge la opción correcta:</p>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button onclick="finalPick('PARIS')">París</button>
+          <button onclick="finalPick('LONDON')">Londres</button>
+          <button onclick="finalPick('ROMA')">Roma</button>
+          <button onclick="finalPick('BERLIN')">Berlín</button>
+        </div>
+        <p id="res4" style="margin-top:10px;color:var(--muted)"></p>
+      </div>
+    </div>
+
+    <footer>Consejo: cada pista desbloquea la siguiente. Si te atascas, usa los botones de pista.</footer>
+  </div>
+
+  <!-- Modal reveal -->
+  <div class="modal" id="modal">
+    <div class="ticket" role="dialog" aria-modal="true" aria-labelledby="revealTitle">
+      <div class="plane">✈️</div>
+      <h2 id="revealTitle">¡Sorpresa, Nagore!</h2>
+      <p class="big">Viajamos a <strong>Londres</strong> ✨</p>
+      <p>Salida: en avión — prepárate para puentes, buses rojos y muchas tazas de té.</p>
+      <div style="margin-top:14px;display:flex;gap:8px;justify-content:center">
+        <button onclick="closeModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    const state = {p1:false,p2:false,p3:false,p4:false};
+
+    function mark(n){
+      document.getElementById('p'+n).classList.add('on');
+    }
+
+    function unlockCard(id){
+      const el = document.getElementById(id);
+      if(el) el.classList.remove('clue-locked');
+      el.classList.add('ok');
+    }
+
+    // Check 1: anagram V O N I A -> AVION (español)
+    function check1(){
+      const v = document.getElementById('ans1').value.trim().toUpperCase();
+      const res = document.getElementById('res1');
+      if(v === 'AVIÓN' || v === 'AVION'){
+        res.textContent = '¡Correcto! Desbloqueada la siguiente pista.';
+        state.p1 = true; mark(1); unlockCard('card2');
+      } else {
+        res.textContent = 'No es correcto. Pista: es el medio de transporte que tomaréis.';
+      }
+    }
+
+    function hint2(){
+      document.getElementById('res2').textContent = 'Empieza por la letra A y rima con "camión" (en castellano).';
+    }
+
+    function check2(){
+      const v = document.getElementById('ans2').value.trim().toUpperCase();
+      const res = document.getElementById('res2');
+      if(v === 'AVIÓN' || v === 'AVION' || v === 'AVION'){
+        res.textContent = '¡Perfecto! Siguiente pista desbloqueada.'; state.p2=true; mark(2); unlockCard('card3');
+      } else if(v === 'AVION' || v === 'PLANE'){
+        // accept some variants
+        res.textContent = 'Casi. Piensa en la palabra en español.';
+      } else {
+        res.textContent = 'No es eso. Usa la pista si la necesitas.';
+      }
+    }
+
+    function hint3(){
+      document.getElementById('res3').textContent = 'Cuenta 7 letras atrás en el alfabeto para cada letra. Empieza por O→H.';
+    }
+
+    function caesarDecode(s, shift){
+      return s.split('').map(ch => {
+        if(!/[A-Z]/i.test(ch)) return ch;
+        const isLower = ch === ch.toLowerCase();
+        let code = ch.toUpperCase().charCodeAt(0) - 65;
+        code = (code - shift + 26) % 26;
+        return String.fromCharCode(code + 65);
+      }).join('');
+    }
+
+    function check3(){
+      const v = document.getElementById('ans3').value.trim().toUpperCase();
+      const expected = caesarDecode('OHALALUVY'.replace(/\s+/g,''),7); // utility
+      const res = document.getElementById('res3');
+      if(v.replace(/\s+/g,'') === expected){
+        res.textContent = '¡Muy bien! Última pista desbloqueada.'; state.p3=true; mark(3); unlockCard('card4');
+      } else {
+        res.textContent = 'Todavía no. Consejo: es una palabra inglesa que verás en la ciudad.';
+      }
+    }
+
+    // compute expected for dev (not shown to user) but used above: expected will be 'HAL...' we'll keep it hidden
+
+    function finalPick(choice){
+      const res = document.getElementById('res4');
+      if(!state.p3){ res.textContent = 'Debes desbloquear esta pista antes de elegir.'; return; }
+      if(choice === 'LONDON'){
+        state.p4=true; mark(4); res.textContent = '¡Elegido! Mira la sorpresa...';
+        showModal();
+      } else {
+        res.textContent = 'Buena opción, pero no es el destino final. Intenta otra.';
+      }
+    }
+
+    function showModal(){
+      document.getElementById('modal').classList.add('show');
+    }
+    function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+
+    // Helpful: allow Enter to submit on inputs
+    ['ans1','ans2','ans3'].forEach(id=>{
+      const el = document.getElementById(id);
+      el.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); document.querySelector('#'+id).blur(); if(id==='ans1') check1(); if(id==='ans2') check2(); if(id==='ans3') check3(); } });
+    });
+
+    // Small accessibility: focus first
+    document.getElementById('ans1').focus();
+
+  </script>
+</body>
+</html>
