@@ -5,42 +5,334 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Yincana sorpresa — Nagore</title>
   <style>
-    :root{--bg:#0f1724;--card:#0b1220;--accent:#f59e0b;--muted:#94a3b8;--glass:rgba(255,255,255,0.04)}
-    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
-    body{background:linear-gradient(180deg,#071025 0%, #0f1724 100%);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:20px}
-    .wrap{width:100%;max-width:980px}
-    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
-    .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ef4444);display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 6px 24px rgba(0,0,0,.6)}
-    h1{margin:0;font-size:22px}
-    p.lead{margin:6px 0 0;color:var(--muted)}
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#f59e0b;
+      --accent2:#3b82f6;
+      --muted:#94a3b8;
+      --glass:rgba(255,255,255,0.04);
+      --success:#10b981;
+    }
+    html,body{
+      height:100%;
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;
+    }
+    body{
+      background:linear-gradient(180deg,#071025 0%, #0f1724 100%);
+      color:#e6eef8;
+      padding:20px;
+      min-height:100vh;
+    }
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      width:100%;
+    }
+    header{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      margin-bottom:24px;
+      flex-wrap:wrap;
+    }
+    .logo{
+      width:64px;
+      height:64px;
+      border-radius:12px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:36px;
+      box-shadow:0 6px 24px rgba(0,0,0,.6);
+      flex-shrink:0;
+    }
+    h1{
+      margin:0;
+      font-size:clamp(20px, 4vw, 28px);
+    }
+    p.lead{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:clamp(14px, 2vw, 16px);
+      max-width:800px;
+    }
 
-    .board{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
-    .card{background:linear-gradient(180deg,var(--card),#071226);border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,.6);min-height:180px}
-    .card h2{margin:0 0 8px;font-size:16px}
-    .hint{color:var(--muted);font-size:14px;margin-bottom:12px}
+    .progress{
+      display:flex;
+      gap:6px;
+      align-items:center;
+      margin:24px 0;
+      flex-wrap:wrap;
+    }
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:rgba(255,255,255,.06);
+      transition:all 0.3s;
+    }
+    .dot.on{
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      transform:scale(1.2);
+    }
 
-    input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.06);background:var(--glass);color:inherit}
-    button{cursor:pointer;padding:10px 12px;border-radius:8px;border:0;background:linear-gradient(90deg,var(--accent),#ef4444);color:#071226;font-weight:700}
-    .small{font-size:13px;padding:8px 10px}
+    .board{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
+      gap:20px;
+      margin-bottom:30px;
+    }
+    .card{
+      background:linear-gradient(180deg,var(--card),#071226);
+      border-radius:12px;
+      padding:20px;
+      box-shadow:0 8px 30px rgba(2,6,23,.6);
+      border:1px solid rgba(255,255,255,0.05);
+      transition:all 0.3s;
+    }
+    .card.unlocked{
+      border-color:rgba(59, 130, 246, 0.3);
+    }
+    .card.solved{
+      border-color:rgba(16, 185, 129, 0.3);
+    }
+    .card h2{
+      margin:0 0 12px;
+      font-size:18px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .card-number{
+      background:var(--accent);
+      color:#071226;
+      width:24px;
+      height:24px;
+      border-radius:50%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      font-weight:bold;
+    }
+    .hint{
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:16px;
+      line-height:1.5;
+    }
 
-    .clue-locked{opacity:.72}
-    .ok{border:2px solid rgba(34,197,94,.18);box-shadow:0 6px 20px rgba(34,197,94,.06)}
+    input[type=text], input[type=number], select{
+      width:100%;
+      padding:12px 16px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,.1);
+      background:var(--glass);
+      color:inherit;
+      font-size:16px;
+      margin-bottom:12px;
+      box-sizing:border-box;
+    }
+    button{
+      cursor:pointer;
+      padding:12px 20px;
+      border-radius:8px;
+      border:0;
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      color:#071226;
+      font-weight:700;
+      font-size:16px;
+      transition:transform 0.2s, opacity 0.2s;
+    }
+    button:hover{
+      transform:translateY(-2px);
+      opacity:0.95;
+    }
+    button:active{
+      transform:translateY(0);
+    }
+    button.small{
+      font-size:14px;
+      padding:10px 16px;
+    }
+    button.secondary{
+      background:var(--glass);
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,.1);
+    }
 
-    .progress{display:flex;gap:8px;align-items:center;margin:12px 0}
-    .dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.06)}
-    .dot.on{background:linear-gradient(90deg,var(--accent),#ef4444)}
+    .btn-group{
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
 
-    footer{margin-top:18px;color:var(--muted);font-size:13px}
+    .result{
+      margin-top:12px;
+      padding:10px;
+      border-radius:8px;
+      font-size:14px;
+      display:none;
+    }
+    .result.success{
+      display:block;
+      background:rgba(16, 185, 129, 0.1);
+      color:var(--success);
+      border:1px solid rgba(16, 185, 129, 0.2);
+    }
+    .result.error{
+      display:block;
+      background:rgba(239, 68, 68, 0.1);
+      color:#ef4444;
+      border:1px solid rgba(239, 68, 68, 0.2);
+    }
 
-    /* Modal reveal */
-    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,.6);visibility:hidden;opacity:0;transition:all .25s}
-    .modal.show{visibility:visible;opacity:1}
-    .ticket{background:linear-gradient(180deg,#fff,#f3f4f6);color:#061126;padding:28px;border-radius:14px;max-width:560px;width:92%;box-shadow:0 30px 80px rgba(2,6,23,.6);text-align:center}
-    .ticket h2{margin:6px 0 12px}
-    .big{font-size:22px;font-weight:800}
-    .plane{font-size:48px}
+    .options-grid{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:10px;
+      margin:15px 0;
+    }
+    .option-btn{
+      width:100%;
+      text-align:left;
+    }
+    
+    .locked-message {
+      color: var(--muted);
+      font-style: italic;
+      text-align: center;
+      padding: 20px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      margin: 15px 0;
+    }
 
-    @media(max-width:760px){.board{grid-template-columns:1fr}}
+    footer{
+      margin-top:30px;
+      color:var(--muted);
+      font-size:14px;
+      text-align:center;
+      padding-top:20px;
+      border-top:1px solid rgba(255,255,255,.05);
+    }
+
+    /* Modal para felicitaciones y modal final */
+    .modal{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(2,6,23,.85);
+      backdrop-filter:blur(4px);
+      visibility:hidden;
+      opacity:0;
+      transition:all .3s;
+      z-index:1000;
+      padding:20px;
+    }
+    .modal.show{
+      visibility:visible;
+      opacity:1;
+    }
+    .ticket{
+      background:linear-gradient(180deg,#fff,#f3f4f6);
+      color:#061126;
+      padding:32px;
+      border-radius:16px;
+      max-width:500px;
+      width:100%;
+      box-shadow:0 30px 80px rgba(2,6,23,.8);
+      text-align:center;
+      animation:ticketReveal 0.5s ease-out;
+    }
+    @keyframes ticketReveal{
+      0%{transform:scale(0.8); opacity:0;}
+      100%{transform:scale(1); opacity:1;}
+    }
+    .ticket h2{
+      margin:16px 0;
+      font-size:24px;
+    }
+    .ticket h3{
+      margin:10px 0;
+      font-size:20px;
+      color:#3b82f6;
+    }
+    .big{
+      font-size:22px;
+      font-weight:800;
+      margin:20px 0;
+    }
+    .emoji{
+      font-size:48px;
+      animation:float 3s ease-in-out infinite;
+    }
+    @keyframes float{
+      0%, 100%{transform:translateY(0);}
+      50%{transform:translateY(-10px);}
+    }
+    .progress-text{
+      font-size:16px;
+      margin:15px 0;
+      color:#64748b;
+    }
+    .destination-hint{
+      font-size:18px;
+      font-weight:bold;
+      margin:20px 0;
+      color:#0f172a;
+    }
+
+    /* Responsive */
+    @media(max-width:768px){
+      .board{
+        grid-template-columns:1fr;
+      }
+      header{
+        flex-direction:column;
+        text-align:center;
+        gap:12px;
+      }
+      .options-grid{
+        grid-template-columns:1fr;
+      }
+      .ticket{
+        padding:24px 20px;
+      }
+      .ticket h2{
+        font-size:22px;
+      }
+      .ticket h3{
+        font-size:18px;
+      }
+      .big{
+        font-size:20px;
+      }
+      .emoji{
+        font-size:40px;
+      }
+    }
+
+    @media(max-width:480px){
+      body{
+        padding:15px;
+      }
+      .card{
+        padding:16px;
+      }
+      .btn-group{
+        flex-direction:column;
+      }
+      button, button.small{
+        width:100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -48,8 +340,8 @@
     <header>
       <div class="logo">✈️</div>
       <div>
-        <h1>Yincana sorpresa — para <strong>Nagore</strong></h1>
-        <p class="lead">Resuelve las pistas para descubrir el destino. Pista final: viajaréis <em>en avión</em>. ¡Suerte!</p>
+        <h1>Yincana sorpresa — Para <strong>Nagore</strong></h1>
+        <p class="lead">Resuelve las 10 pistas paso a paso. Solo al final descubrirás el destino secreto. ¡Buena suerte!</p>
       </div>
     </header>
 
@@ -58,172 +350,474 @@
       <div class="dot" id="p2"></div>
       <div class="dot" id="p3"></div>
       <div class="dot" id="p4"></div>
+      <div class="dot" id="p5"></div>
+      <div class="dot" id="p6"></div>
+      <div class="dot" id="p7"></div>
+      <div class="dot" id="p8"></div>
+      <div class="dot" id="p9"></div>
+      <div class="dot" id="p10"></div>
     </div>
 
     <div class="board">
-      <!-- Clue 1: Rompecabezas de palabra -->
+      <!-- Pista 1 -->
       <div class="card" id="card1">
-        <h2>Pista 1 — Anagrama</h2>
-        <p class="hint">Reordena las letras para formar una palabra relacionada con cómo viajaremos.</p>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div style="font-weight:800;font-size:20px">V O N I A</div>
-          <div style="flex:1">
-            <input type="text" id="ans1" placeholder="Escribe la palabra aquí">
-          </div>
-          <button onclick="check1()">Comprobar</button>
+        <h2><span class="card-number">1</span> Comienzo fácil</h2>
+        <p class="hint">Día que nos conocimos (número del día)</p>
+        <input type="number" id="ans1" placeholder="Escribe el número">
+        <div class="btn-group">
+          <button onclick="checkAnswer(1)">Comprobar</button>
+          <button class="small secondary" onclick="showHint(1)">Pista</button>
         </div>
-        <p id="res1" style="margin-top:10px;color:var(--muted)"></p>
+        <div id="res1" class="result"></div>
       </div>
 
-      <!-- Clue 2: Riddle -->
+      <!-- Pista 2 -->
       <div class="card clue-locked" id="card2">
-        <h2>Pista 2 — Adivinanza</h2>
-        <p class="hint">"Tengo alas aunque no soy pájaro, me verás en aeropuertos y cruzo cielos como un faro."</p>
-        <input type="text" id="ans2" placeholder="¿Qué soy?">
-        <div style="margin-top:10px;display:flex;gap:8px">
-          <button class="small" onclick="check2()">Comprobar</button>
-          <button class="small" onclick="hint2()">Pista</button>
+        <h2><span class="card-number">2</span> Odontóloga o fake?</h2>
+        <p class="hint">Con ella raspas y eliminas el sarro que está pegado al diente.</p>
+        <input type="text" id="ans2" placeholder="Escribe el instrumento">
+        <div class="btn-group">
+          <button onclick="checkAnswer(2)">Comprobar</button>
+          <button class="small secondary" onclick="showHint(2)">Pista</button>
         </div>
-        <p id="res2" style="margin-top:10px;color:var(--muted)"></p>
+        <div id="res2" class="result"></div>
       </div>
 
-      <!-- Clue 3: Cifrado César -->
+      <!-- Pista 3 -->
       <div class="card clue-locked" id="card3">
-        <h2>Pista 3 — Mensaje cifrado</h2>
-        <p class="hint">Desplaza cada letra 7 posiciones atrás para leer la palabra (A→T si retrocedes 7). Texto: <code>O H A L A L U V Y</code></p>
-        <input type="text" id="ans3" placeholder="Escribe lo que descifres">
-        <div style="margin-top:10px;display:flex;gap:8px">
-          <button class="small" onclick="check3()">Comprobar</button>
-          <button class="small" onclick="hint3()">Pista</button>
+        <h2><span class="card-number">3</span> Capital europea</h2>
+        <p class="hint">¿Cuál es la capital de Italia?</p>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectOption(3, 'Roma')">Roma</button>
+          <button class="option-btn" onclick="selectOption(3, 'Milán')">Milán</button>
+          <button class="option-btn" onclick="selectOption(3, 'Nápoles')">Nápoles</button>
+          <button class="option-btn" onclick="selectOption(3, 'Florencia')">Florencia</button>
         </div>
-        <p id="res3" style="margin-top:10px;color:var(--muted)"></p>
+        <div id="res3" class="result"></div>
       </div>
 
-      <!-- Clue 4: Quiz final -->
+      <!-- Pista 4 - MODIFICADA: Adivinanza del color azul -->
       <div class="card clue-locked" id="card4">
-        <h2>Pista 4 — Elección final</h2>
-        <p class="hint">Con las pistas previas tienes letras y palabras que apuntan al destino. Escoge la opción correcta:</p>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <button onclick="finalPick('PARIS')">París</button>
-          <button onclick="finalPick('LONDON')">Londres</button>
-          <button onclick="finalPick('ROMA')">Roma</button>
-          <button onclick="finalPick('BERLIN')">Berlín</button>
+        <h2><span class="card-number">4</span> Adivinanza del color</h2>
+        <p class="hint">"Soy el color del cielo en un día despejado, y también del mar cuando está tranquilo y sereno. ¿Qué color soy?"</p>
+        <input type="text" id="ans4" placeholder="Escribe el color">
+        <div class="btn-group">
+          <button onclick="checkAnswer(4)">Comprobar</button>
+          <button class="small secondary" onclick="showHint(4)">Pista</button>
         </div>
-        <p id="res4" style="margin-top:10px;color:var(--muted)"></p>
+        <div id="res4" class="result"></div>
+      </div>
+
+      <!-- Pista 5 -->
+      <div class="card clue-locked" id="card5">
+        <h2><span class="card-number">5</span> Adivinanza dental</h2>
+        <p class="hint">¿Cuál es el término clínico para la pérdida de inserción del tejido conectivo y la migración del epitelio hacia el ápice?</p>
+        <input type="text" id="ans5" placeholder="Escribe el término">
+        <div class="btn-group">
+          <button onclick="checkAnswer(5)">Comprobar</button>
+          <button class="small secondary" onclick="showHint(5)">Pista</button>
+        </div>
+        <div id="res5" class="result"></div>
+      </div>
+
+      <!-- Pista 6 - MODIFICADA: Matemáticas extremas -->
+      <div class="card clue-locked" id="card6">
+        <h2><span class="card-number">6</span> Matemáticas extremas</h2>
+        <p class="hint">6 x 7 = ?</p>
+        <input type="number" id="ans6" placeholder="Escribe el resultado">
+        <div class="btn-group">
+          <button onclick="checkAnswer(6)">Comprobar</button>
+          <button class="small secondary" onclick="showHint(6)">Pista</button>
+        </div>
+        <div id="res6" class="result"></div>
+      </div>
+
+      <!-- Pista 7 -->
+      <div class="card clue-locked" id="card7">
+        <h2><span class="card-number">7</span> Cosas de dentistas</h2>
+        <p class="hint">¿Cuál es el nombre genérico o de marca más reconocido para el instrumento de níquel-titanio en forma de limas rotatorias que revolucionó la instrumentación de los conductos radiculares?</p>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectOption(7, 'Guttapercha')">Guttapercha</button>
+          <button class="option-btn" onclick="selectOption(7, 'Lentulo')">Lentulo</button>
+          <button class="option-btn" onclick="selectOption(7, 'ProTaper')">ProTaper</button>
+          <button class="option-btn" onclick="selectOption(7, 'Fórceps')">Fórceps</button>
+        </div>
+        <div id="res7" class="result"></div>
+      </div>
+
+      <!-- Pista 8 -->
+      <div class="card clue-locked" id="card8">
+        <h2><span class="card-number">8</span> Aviones...?</h2>
+        <p class="hint">El modelo más común que el pesao de tu novio dice siempre cuando ve uno en el cielo</p>
+        <input type="text" id="ans8" placeholder="Escribe el modelo">
+        <div class="btn-group">
+          <button onclick="checkAnswer(8)">Comprobar</button>
+          <button class="small secondary" onclick="showHint(8)">Pista</button>
+        </div>
+        <div id="res8" class="result"></div>
+      </div>
+
+      <!-- Pista 9 - MODIFICADA: Matemáticas de verdad -->
+      <div class="card clue-locked" id="card9">
+        <h2><span class="card-number">9</span> Matemáticas de verdad</h2>
+        <p class="hint">Mi DNI (que te lo sabes: 79185989) ÷ 2 × 3 = ?</p>
+        <input type="number" id="ans9" placeholder="Escribe el resultado">
+        <div class="btn-group">
+          <button onclick="checkAnswer(9)">Comprobar</button>
+          <button class="small secondary" onclick="showHint(9)">Pista</button>
+        </div>
+        <div id="res9" class="result"></div>
+      </div>
+
+      <!-- Pista 10 -->
+      <div class="card clue-locked" id="card10">
+        <h2><span class="card-number">10</span> Destino final</h2>
+        <p class="hint">Con todas las pistas resueltas, ¿cuál es nuestro destino de viaje?</p>
+        
+        <div id="lockedOptions" class="locked-message">
+          ⏳ Completa todas las pistas anteriores para desbloquear las opciones del destino
+        </div>
+        
+        <div id="destinationOptions" class="options-grid" style="display: none;">
+          <button class="option-btn" onclick="selectOption(10, 'París')">París</button>
+          <button class="option-btn" onclick="selectOption(10, 'Londres')">Londres</button>
+          <button class="option-btn" onclick="selectOption(10, 'Suiza')">Suiza</button>
+          <button class="option-btn" onclick="selectOption(10, 'Tokio')">Tokio</button>
+        </div>
+        
+        <div id="res10" class="result"></div>
       </div>
     </div>
 
-    <footer>Consejo: cada pista desbloquea la siguiente. Si te atascas, usa los botones de pista.</footer>
+    <footer>
+      <p>Consejo: Cada pista correcta desbloquea la siguiente. Si te atascas, usa los botones de pista.</p>
+      <p>¡El destino final será una sorpresa!</p>
+    </footer>
   </div>
 
-  <!-- Modal reveal -->
-  <div class="modal" id="modal">
-    <div class="ticket" role="dialog" aria-modal="true" aria-labelledby="revealTitle">
-      <div class="plane">✈️</div>
-      <h2 id="revealTitle">¡Sorpresa, Nagore!</h2>
-      <p class="big">Viajamos a <strong>Londres</strong> ✨</p>
-      <p>Salida: en avión — prepárate para puentes, buses rojos y muchas tazas de té.</p>
-      <div style="margin-top:14px;display:flex;gap:8px;justify-content:center">
-        <button onclick="closeModal()">Cerrar</button>
+  <!-- Modal para felicitaciones de cada pregunta -->
+  <div class="modal" id="successModal">
+    <div class="ticket" role="dialog" aria-modal="true">
+      <div id="successEmoji" class="emoji">🎉</div>
+      <h2 id="successTitle">¡Correcto!</h2>
+      <h3 id="successQuestion">Pregunta completada</h3>
+      <div id="successMessage" class="progress-text">
+        ¡Muy bien! Has acertado la respuesta.
+      </div>
+      <div id="destinationHint" class="destination-hint">
+        ¿Dónde iremos...? ✈️
+      </div>
+      <div id="progressMessage" class="progress-text">
+        Ya te va quedando menos para descubrirlo...
+      </div>
+      <div style="margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button onclick="closeSuccessModal()">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal final de destino -->
+  <div class="modal" id="finalModal">
+    <div class="ticket" role="dialog" aria-modal="true">
+      <div class="emoji">✈️</div>
+      <h2>¡ENHORABUENA NAGORE!</h2>
+      <h3>Has completado todas las pistas</h3>
+      <div class="big">Tu destino sorpresa es:</div>
+      <div class="big" style="color:#3b82f6; font-size:32px;">LONDRES</div>
+      <div class="emoji" style="font-size:36px;">🇬🇧✨</div>
+      <p style="margin:20px 0;">Prepárate para explorar esta increíble ciudad llena de historia, cultura y diversión.</p>
+      <p>¡Big Ben, el London Eye, Buckingham Palace y mucho más te esperan!</p>
+      <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button onclick="closeFinalModal()">¡Qué emoción!</button>
+        <button class="secondary" onclick="shareResult()">Compartir</button>
       </div>
     </div>
   </div>
 
   <script>
-    // State
-    const state = {p1:false,p2:false,p3:false,p4:false};
+    // Estado del juego
+    const gameState = {
+      unlocked: 1,
+      solvedCount: 0,
+      answers: {
+        1: "15",
+        2: "cureta",
+        3: "Roma",
+        4: "azul", // Adivinanza del color
+        5: "bolsa periodontal",
+        6: "63", // 6 x 7 (incorrecto a propósito)
+        7: "ProTaper",
+        8: "airbus a330",
+        9: "118778983.5", // 79185989 ÷ 2 × 3
+        10: "Londres"
+      },
+      hints: {
+        1: "Piensa en el día del mes",
+        2: "Es un instrumento de raspado en odontología",
+        3: "Es la ciudad más famosa de Italia",
+        4: "Es el color del cielo en un día soleado",
+        5: "Es una condición patológica en periodoncia",
+        6: "6 multiplicado por 7... pero espera, ¿es realmente 42?",
+        7: "Es un sistema de instrumentación endodóntica",
+        8: "Es un avión bimotor de fuselaje ancho",
+        9: "79185989 ÷ 2 = 39592994.5, luego × 3",
+        10: "Piensa en qué ciudad te gustaría visitar"
+      },
+      successMessages: {
+        1: ["¡Primer paso completado!", "¡Buena memoria!", "El comienzo perfecto..."],
+        2: ["¡Excelente!", "Sabía que lo sabrías...", "¿Odontóloga o fake? ¡Definitivamente odontóloga!"],
+        3: ["¡Geografía impecable!", "¿A que sabías esta?", "Cada vez más cerca..."],
+        4: ["¡Colores dominados!", "Muy observadora...", "El puzzle se va completando..."],
+        5: ["¡Periodoncia a la vista!", "Vaya profesional...", "La emoción va en aumento..."],
+        6: ["¡Matemáticas extremas superadas!", "¿6x7? ¡Claro que es 63!", "Ya casi está..."],
+        7: ["¡Endodoncia en estado puro!", "Esa la tenías que saber...", "Casi descubres el destino..."],
+        8: ["¡Aviones identificados!", "Al pesao le va a encantar...", "El misterio se desvela..."],
+        9: ["¡Matemáticas de verdad dominadas!", "¡Vaya cálculo!", "¡Última antes del destino final!"],
+        10: ["¡DESTINO ENCONTRADO!", "¡LO HAS LOGRADO!", "¡LA AVENTURA COMIENZA!"]
+      },
+      progressMessages: [
+        "¡Ya llevas 1 de 10! ¿Dónde iremos...?",
+        "¡2 de 10 completados! El misterio continúa...",
+        "¡3 de 10! Cada paso te acerca más al destino",
+        "¡4 de 10! La intriga va en aumento ✈️",
+        "¡Mitad del camino! 5 de 10 superados",
+        "¡6 de 10! El destino se acerca...",
+        "¡7 de 10! Ya casi lo descubres",
+        "¡8 de 10! Muy pocas pistas faltan",
+        "¡9 de 10! ¡La última antes del gran secreto!",
+        "¡10 de 10! ¡DESTINO REVELADO!"
+      ]
+    };
 
-    function mark(n){
-      document.getElementById('p'+n).classList.add('on');
-    }
+    // Calcular resultado de la pregunta 9
+    const dni = 79185989;
+    const resultadoP9 = (dni / 2) * 3;
+    gameState.answers[9] = resultadoP9.toString();
 
-    function unlockCard(id){
-      const el = document.getElementById(id);
-      if(el) el.classList.remove('clue-locked');
-      el.classList.add('ok');
-    }
-
-    // Check 1: anagram V O N I A -> AVION (español)
-    function check1(){
-      const v = document.getElementById('ans1').value.trim().toUpperCase();
-      const res = document.getElementById('res1');
-      if(v === 'AVIÓN' || v === 'AVION'){
-        res.textContent = '¡Correcto! Desbloqueada la siguiente pista.';
-        state.p1 = true; mark(1); unlockCard('card2');
-      } else {
-        res.textContent = 'No es correcto. Pista: es el medio de transporte que tomaréis.';
-      }
-    }
-
-    function hint2(){
-      document.getElementById('res2').textContent = 'Empieza por la letra A y rima con "camión" (en castellano).';
-    }
-
-    function check2(){
-      const v = document.getElementById('ans2').value.trim().toUpperCase();
-      const res = document.getElementById('res2');
-      if(v === 'AVIÓN' || v === 'AVION' || v === 'AVION'){
-        res.textContent = '¡Perfecto! Siguiente pista desbloqueada.'; state.p2=true; mark(2); unlockCard('card3');
-      } else if(v === 'AVION' || v === 'PLANE'){
-        // accept some variants
-        res.textContent = 'Casi. Piensa en la palabra en español.';
-      } else {
-        res.textContent = 'No es eso. Usa la pista si la necesitas.';
-      }
-    }
-
-    function hint3(){
-      document.getElementById('res3').textContent = 'Cuenta 7 letras atrás en el alfabeto para cada letra. Empieza por O→H.';
-    }
-
-    function caesarDecode(s, shift){
-      return s.split('').map(ch => {
-        if(!/[A-Z]/i.test(ch)) return ch;
-        const isLower = ch === ch.toLowerCase();
-        let code = ch.toUpperCase().charCodeAt(0) - 65;
-        code = (code - shift + 26) % 26;
-        return String.fromCharCode(code + 65);
-      }).join('');
-    }
-
-    function check3(){
-      const v = document.getElementById('ans3').value.trim().toUpperCase();
-      const expected = caesarDecode('OHALALUVY'.replace(/\s+/g,''),7); // utility
-      const res = document.getElementById('res3');
-      if(v.replace(/\s+/g,'') === expected){
-        res.textContent = '¡Muy bien! Última pista desbloqueada.'; state.p3=true; mark(3); unlockCard('card4');
-      } else {
-        res.textContent = 'Todavía no. Consejo: es una palabra inglesa que verás en la ciudad.';
-      }
-    }
-
-    // compute expected for dev (not shown to user) but used above: expected will be 'HAL...' we'll keep it hidden
-
-    function finalPick(choice){
-      const res = document.getElementById('res4');
-      if(!state.p3){ res.textContent = 'Debes desbloquear esta pista antes de elegir.'; return; }
-      if(choice === 'LONDON'){
-        state.p4=true; mark(4); res.textContent = '¡Elegido! Mira la sorpresa...';
-        showModal();
-      } else {
-        res.textContent = 'Buena opción, pero no es el destino final. Intenta otra.';
-      }
-    }
-
-    function showModal(){
-      document.getElementById('modal').classList.add('show');
-    }
-    function closeModal(){ document.getElementById('modal').classList.remove('show'); }
-
-    // Helpful: allow Enter to submit on inputs
-    ['ans1','ans2','ans3'].forEach(id=>{
-      const el = document.getElementById(id);
-      el.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); document.querySelector('#'+id).blur(); if(id==='ans1') check1(); if(id==='ans2') check2(); if(id==='ans3') check3(); } });
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', function() {
+      markProgress(1);
+      document.getElementById('ans1').focus();
     });
 
-    // Small accessibility: focus first
-    document.getElementById('ans1').focus();
+    // Funciones de utilidad
+    function markProgress(n) {
+      for (let i = 1; i <= n; i++) {
+        document.getElementById('p' + i).classList.add('on');
+      }
+    }
 
+    function unlockCard(n) {
+      if (n <= 10) {
+        const card = document.getElementById('card' + n);
+        card.classList.remove('clue-locked');
+        card.classList.add('unlocked');
+        gameState.unlocked = Math.max(gameState.unlocked, n);
+        
+        // Enfocar el input de la siguiente tarjeta si existe
+        setTimeout(() => {
+          const nextInput = document.getElementById('ans' + (n + 1));
+          if (nextInput) nextInput.focus();
+        }, 300);
+      }
+    }
+
+    function markSolved(n) {
+      const card = document.getElementById('card' + n);
+      card.classList.remove('unlocked');
+      card.classList.add('solved');
+      gameState.solvedCount++;
+      
+      // Si todas las preguntas excepto la 10 están resueltas, mostrar opciones de destino
+      if (gameState.solvedCount >= 9 && n !== 10) {
+        showDestinationOptions();
+      }
+    }
+
+    function showDestinationOptions() {
+      const lockedMsg = document.getElementById('lockedOptions');
+      const options = document.getElementById('destinationOptions');
+      
+      if (lockedMsg && options) {
+        lockedMsg.style.display = 'none';
+        options.style.display = 'grid';
+      }
+    }
+
+    function clearResult(id) {
+      const res = document.getElementById('res' + id);
+      res.textContent = '';
+      res.className = 'result';
+      res.style.display = 'none';
+    }
+
+    function showSuccessModal(questionNumber) {
+      const emojis = ["🎉", "✅", "✨", "⭐", "🏆", "💫", "🌟", "🎊", "🔥", "💯"];
+      const randomEmoji = emojis[questionNumber - 1] || emojis[Math.floor(Math.random() * emojis.length)];
+      
+      const successMessages = gameState.successMessages[questionNumber];
+      const randomMessage = successMessages[Math.floor(Math.random() * successMessages.length)];
+      
+      document.getElementById('successEmoji').textContent = randomEmoji;
+      document.getElementById('successTitle').textContent = `¡Pregunta ${questionNumber} completada!`;
+      document.getElementById('successQuestion').textContent = randomMessage;
+      document.getElementById('progressMessage').textContent = gameState.progressMessages[questionNumber - 1];
+      
+      if (questionNumber === 10) {
+        document.getElementById('destinationHint').innerHTML = "¡DESTINO ENCONTRADO!";
+      } else {
+        document.getElementById('destinationHint').innerHTML = "¿Dónde iremos...? ✈️";
+      }
+      
+      document.getElementById('successModal').classList.add('show');
+    }
+
+    function showFinalModal() {
+      document.getElementById('finalModal').classList.add('show');
+    }
+
+    // Funciones de comprobación
+    function checkAnswer(id) {
+      const input = document.getElementById('ans' + id);
+      const value = input ? input.value.trim().toLowerCase() : '';
+      
+      if (!value) {
+        showResult(id, 'Por favor, escribe una respuesta', false);
+        return;
+      }
+      
+      let expected = gameState.answers[id].toLowerCase();
+      
+      // Aceptar variaciones para ciertas respuestas
+      if (id === 5) {
+        if (value.includes('bolsa') && value.includes('periodontal')) {
+          clearResult(id);
+          showSuccess(id);
+          return;
+        }
+      } else if (id === 8) {
+        if (value.includes('airbus') && value.includes('330')) {
+          clearResult(id);
+          showSuccess(id);
+          return;
+        }
+      } else if (id === 2) {
+        if (value === 'cureta') {
+          clearResult(id);
+          showSuccess(id);
+          return;
+        }
+      } else if (id === 4) {
+        // Para "azul" aceptar también "azul" exacto
+        if (value === 'azul') {
+          clearResult(id);
+          showSuccess(id);
+          return;
+        }
+      } else if (id === 6) {
+        // Para la pregunta 6, aceptar solo "63" (el error intencionado)
+        if (value === '63') {
+          clearResult(id);
+          showSuccess(id);
+          return;
+        }
+      } else if (id === 9) {
+        // Para la pregunta 9, aceptar el resultado exacto o aproximado
+        const numValue = parseFloat(value.replace(',', '.'));
+        const expectedNum = parseFloat(expected);
+        // Aceptar si la diferencia es menor a 0.1 (para tolerar errores de redondeo)
+        if (Math.abs(numValue - expectedNum) < 0.1) {
+          clearResult(id);
+          showSuccess(id);
+          return;
+        }
+      }
+      
+      if (value === expected) {
+        clearResult(id);
+        showSuccess(id);
+      } else {
+        showResult(id, 'Respuesta incorrecta. Intenta de nuevo.', false);
+      }
+    }
+
+    function selectOption(id, option) {
+      const normalizedOption = option.toLowerCase();
+      const expected = gameState.answers[id].toLowerCase();
+      
+      if (normalizedOption === expected) {
+        clearResult(id);
+        showSuccess(id);
+      } else {
+        showResult(id, 'No es la opción correcta. Prueba otra.', false);
+      }
+    }
+
+    function showSuccess(id) {
+      markSolved(id);
+      if (id < 10) {
+        unlockCard(id + 1);
+        markProgress(id + 1);
+      }
+      
+      // Mostrar modal de felicitación
+      setTimeout(() => {
+        showSuccessModal(id);
+      }, 300);
+      
+      // Si es la pregunta 10, mostrar modal final después de un breve retraso
+      if (id === 10) {
+        setTimeout(() => {
+          closeSuccessModal();
+          setTimeout(showFinalModal, 300);
+        }, 2000);
+      }
+    }
+
+    function showResult(id, message, isSuccess) {
+      const res = document.getElementById('res' + id);
+      res.textContent = message;
+      res.className = 'result ' + (isSuccess ? 'success' : 'error');
+      res.style.display = 'block';
+    }
+
+    function showHint(id) {
+      alert(gameState.hints[id]);
+    }
+
+    // Modal functions
+    function closeSuccessModal() {
+      document.getElementById('successModal').classList.remove('show');
+    }
+
+    function closeFinalModal() {
+      document.getElementById('finalModal').classList.remove('show');
+    }
+
+    function shareResult() {
+      if (navigator.share) {
+        navigator.share({
+          title: '¡He completado la yincana sorpresa!',
+          text: 'Descubrí que mi destino secreto es Londres ✈️',
+          url: window.location.href
+        });
+      } else {
+        alert('¡Comparte la noticia! Mi destino sorpresa es LONDRES ✈️');
+      }
+    }
+
+    // Permitir Enter para enviar respuestas
+    for (let i = 1; i <= 9; i++) {
+      const input = document.getElementById('ans' + i);
+      if (input) {
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            checkAnswer(i);
+          }
+        });
+      }
+    }
   </script>
 </body>
 </html>
