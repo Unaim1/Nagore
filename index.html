@@ -396,10 +396,10 @@
         <div id="res3" class="result"></div>
       </div>
 
-      <!-- Pista 4 - MODIFICADA: Adivinanza del color azul -->
+      <!-- Pista 4 -->
       <div class="card clue-locked" id="card4">
-        <h2><span class="card-number">4</span> Adivinanza del color</h2>
-        <p class="hint">"Soy el color del cielo en un día despejado, y también del mar cuando está tranquilo y sereno. ¿Qué color soy?"</p>
+        <h2><span class="card-number">4</span> Color en odontología</h2>
+        <p class="hint">En la escala de colores para blanqueamiento dental, ¿qué color representa el tono más oscuro de los dientes que suele estar en la zona cervical (junto a la encía)?</p>
         <input type="text" id="ans4" placeholder="Escribe el color">
         <div class="btn-group">
           <button onclick="checkAnswer(4)">Comprobar</button>
@@ -408,19 +408,20 @@
         <div id="res4" class="result"></div>
       </div>
 
-      <!-- Pista 5 -->
+      <!-- Pista 5 - CORREGIDA: Tipo IV de Vertucci -->
       <div class="card clue-locked" id="card5">
-        <h2><span class="card-number">5</span> Adivinanza dental</h2>
-        <p class="hint">¿Cuál es el término clínico para la pérdida de inserción del tejido conectivo y la migración del epitelio hacia el ápice?</p>
-        <input type="text" id="ans5" placeholder="Escribe el término">
-        <div class="btn-group">
-          <button onclick="checkAnswer(5)">Comprobar</button>
-          <button class="small secondary" onclick="showHint(5)">Pista</button>
+        <h2><span class="card-number">5</span> Piensa algo relacionado con la descripción</h2>
+        <p class="hint">En un primer molar superior sin tratamientos previos, la CBCT revela que la raíz palatina presenta una anatomía inusual: dos conductos separados desde el tercio coronal hasta el apical, sin convergencia. ¿Cómo se clasifica esta variación?</p>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectOption(5, 'Tipo II de Vertucci')">Tipo II de Vertucci</button>
+          <button class="option-btn" onclick="selectOption(5, 'Tipo III de Vertucci')">Tipo III de Vertucci</button>
+          <button class="option-btn" onclick="selectOption(5, 'Tipo IV de Vertucci')">Tipo IV de Vertucci</button>
+          <button class="option-btn" onclick="selectOption(5, 'Tipo V de Vertucci')">Tipo V de Vertucci</button>
         </div>
         <div id="res5" class="result"></div>
       </div>
 
-      <!-- Pista 6 - MODIFICADA: Matemáticas extremas -->
+      <!-- Pista 6 -->
       <div class="card clue-locked" id="card6">
         <h2><span class="card-number">6</span> Matemáticas extremas</h2>
         <p class="hint">6 x 7 = ?</p>
@@ -437,10 +438,10 @@
         <h2><span class="card-number">7</span> Cosas de dentistas</h2>
         <p class="hint">¿Cuál es el nombre genérico o de marca más reconocido para el instrumento de níquel-titanio en forma de limas rotatorias que revolucionó la instrumentación de los conductos radiculares?</p>
         <div class="options-grid">
-          <button class="option-btn" onclick="selectOption(7, 'Guttapercha')">Guttapercha</button>
-          <button class="option-btn" onclick="selectOption(7, 'Lentulo')">Lentulo</button>
-          <button class="option-btn" onclick="selectOption(7, 'ProTaper')">ProTaper</button>
-          <button class="option-btn" onclick="selectOption(7, 'Fórceps')">Fórceps</button>
+          <button class="option-btn" onclick="selectOption(7, 'Guttapercha')">Guttapercha (Material de obturación)</button>
+          <button class="option-btn" onclick="selectOption(7, 'Lentulo')">Lentulo (Instrumento para colocar cemento)</button>
+          <button class="option-btn" onclick="selectOption(7, 'ProTaper')">ProTaper (Sistema de limas rotatorias de NiTi)</button>
+          <button class="option-btn" onclick="selectOption(7, 'Fórceps')">Fórceps (Pinza para extracción)</button>
         </div>
         <div id="res7" class="result"></div>
       </div>
@@ -457,7 +458,7 @@
         <div id="res8" class="result"></div>
       </div>
 
-      <!-- Pista 9 - MODIFICADA: Matemáticas de verdad -->
+      <!-- Pista 9 -->
       <div class="card clue-locked" id="card9">
         <h2><span class="card-number">9</span> Matemáticas de verdad</h2>
         <p class="hint">Mi DNI (que te lo sabes: 79185989) ÷ 2 × 3 = ?</p>
@@ -543,20 +544,20 @@
         1: "15",
         2: "cureta",
         3: "Roma",
-        4: "azul", // Adivinanza del color
-        5: "bolsa periodontal",
-        6: "63", // 6 x 7 (incorrecto a propósito)
+        4: "azul",
+        5: "Tipo IV de Vertucci", // CORRECCIÓN: Tipo IV en lugar de Tipo V
+        6: "63",
         7: "ProTaper",
         8: "airbus a330",
-        9: "118778983.5", // 79185989 ÷ 2 × 3
+        9: "118778983.5",
         10: "Londres"
       },
       hints: {
         1: "Piensa en el día del mes",
         2: "Es un instrumento de raspado en odontología",
         3: "Es la ciudad más famosa de Italia",
-        4: "Es el color del cielo en un día soleado",
-        5: "Es una condición patológica en periodoncia",
+        4: "Es un color primario que en odontología indica tonalidad oscura",
+        5: "Dos conductos separados que permanecen independientes hasta el ápice",
         6: "6 multiplicado por 7... pero espera, ¿es realmente 42?",
         7: "Es un sistema de instrumentación endodóntica",
         8: "Es un avión bimotor de fuselaje ancho",
@@ -567,8 +568,8 @@
         1: ["¡Primer paso completado!", "¡Buena memoria!", "El comienzo perfecto..."],
         2: ["¡Excelente!", "Sabía que lo sabrías...", "¿Odontóloga o fake? ¡Definitivamente odontóloga!"],
         3: ["¡Geografía impecable!", "¿A que sabías esta?", "Cada vez más cerca..."],
-        4: ["¡Colores dominados!", "Muy observadora...", "El puzzle se va completando..."],
-        5: ["¡Periodoncia a la vista!", "Vaya profesional...", "La emoción va en aumento..."],
+        4: ["¡Odontología del color dominada!", "¡Exacto! El azul en la escala VITA", "El puzzle se va completando..."],
+        5: ["¡Anatomía radicular superada!", "¡Tipo IV correcto!", "La emoción va en aumento..."],
         6: ["¡Matemáticas extremas superadas!", "¿6x7? ¡Claro que es 63!", "Ya casi está..."],
         7: ["¡Endodoncia en estado puro!", "Esa la tenías que saber...", "Casi descubres el destino..."],
         8: ["¡Aviones identificados!", "Al pesao le va a encantar...", "El misterio se desvela..."],
@@ -708,24 +709,20 @@
           return;
         }
       } else if (id === 4) {
-        // Para "azul" aceptar también "azul" exacto
         if (value === 'azul') {
           clearResult(id);
           showSuccess(id);
           return;
         }
       } else if (id === 6) {
-        // Para la pregunta 6, aceptar solo "63" (el error intencionado)
         if (value === '63') {
           clearResult(id);
           showSuccess(id);
           return;
         }
       } else if (id === 9) {
-        // Para la pregunta 9, aceptar el resultado exacto o aproximado
         const numValue = parseFloat(value.replace(',', '.'));
         const expectedNum = parseFloat(expected);
-        // Aceptar si la diferencia es menor a 0.1 (para tolerar errores de redondeo)
         if (Math.abs(numValue - expectedNum) < 0.1) {
           clearResult(id);
           showSuccess(id);
